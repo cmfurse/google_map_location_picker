@@ -215,8 +215,12 @@ class MapPickerState extends State<MapPicker> {
       alignment: widget.resultCardAlignment ?? Alignment.bottomCenter,
       child: Padding(
         padding: widget.resultCardPadding ?? EdgeInsets.all(16.0),
-        child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: Container(
+      decoration: widget.resultCardDecoration ?? BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+      color: Colors.black,
+    ),
+    // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           child: Consumer<LocationProvider>(
               builder: (context, locationProvider, _) {
             return Padding(
@@ -242,7 +246,7 @@ class MapPickerState extends State<MapPicker> {
                           _address ??
                               S.of(context)?.unnamedPlace ??
                               'Unnamed place',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         );
                       },
                     ),
