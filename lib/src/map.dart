@@ -83,6 +83,13 @@ class MapPickerState extends State<MapPicker> {
 
   String? _placeId;
 
+  String? _placeName;
+
+  String? _country;
+
+  String? _city;
+  String? _state;
+
   void _onToggleMapTypePressed() {
     final MapType nextType =
         MapType.values[(_currentMapType.index + 1) % MapType.values.length];
@@ -242,6 +249,10 @@ class MapPickerState extends State<MapPicker> {
                       builder: (context, data) {
                         _address = data!["address"];
                         _placeId = data["placeId"];
+                        _placeName = data["long_name"];
+                        _country = data["country"];
+                        _city = data["city"];
+                        _state = data["state"];
                         return Text(
                           _address ??
                               S.of(context)?.unnamedPlace ??
@@ -259,6 +270,10 @@ class MapPickerState extends State<MapPicker> {
                           latLng: locationProvider.lastIdleLocation,
                           address: _address,
                           placeId: _placeId,
+                          placeName: _placeName,
+                          cityName: _city,
+                          countryName: _country,
+                          stateName: _state,
                         )
                       });
                     },
@@ -288,13 +303,68 @@ class MapPickerState extends State<MapPicker> {
 
       return {
         "placeId": response['results'][0]['place_id'],
-        "address": response['results'][0]['formatted_address']
+        "address": response['results'][0]['formatted_address'],
+        "long_name" : response['results'][0]['address_components'][1]['long_name'],
+        "country"   : getCountryName(response['results'][0]),
+        "city"      : getCityName(response['results'][0]),
+        "state"      : getStateName(response['results'][0])
       };
     } catch (e) {
       print("BLB $e");
     }
 
     return {"placeId": null, "address": null};
+  }
+
+  String? getStateName(dynamic addressArray){
+    String countryName = '';
+
+    print(addressArray);
+    for (var i = 0; i < addressArray['address_components'].length; i++) {
+      if(addressArray['address_components'][i]['types'].length > 0){
+        for (var x = 0; x < addressArray['address_components'][i]['types'].length; x++) {
+          if ('administrative_area_level_1' == addressArray['address_components'][i]['types'][x]) {
+            countryName = addressArray['address_components'][i]['long_name'];
+            return countryName;
+          }
+        }
+      } else {
+        return 'N/A';
+      }
+    }
+  }
+  String? getCountryName(dynamic addressArray){
+    String countryName = '';
+
+    print(addressArray);
+    for (var i = 0; i < addressArray['address_components'].length; i++) {
+      if(addressArray['address_components'][i]['types'].length > 0){
+        for (var x = 0; x < addressArray['address_components'][i]['types'].length; x++) {
+          if ('country' == addressArray['address_components'][i]['types'][x]) {
+            countryName = addressArray['address_components'][i]['long_name'];
+            return countryName;
+          }
+        }
+      } else {
+        return 'N/A';
+      }
+    }
+  }
+
+  String? getCityName(dynamic addressArray){
+    String cityName = '';
+    for (var i = 0; i < addressArray['address_components'].length; i++) {
+      if(addressArray['address_components'][i]['types'].length > 0){
+        for (var x = 0; x < addressArray['address_components'][i]['types'].length; x++) {
+          if ('locality' == addressArray['address_components'][i]['types'][x]) {
+            cityName = addressArray['address_components'][i]['long_name'];
+            return cityName;
+          }
+        }
+      }else{
+        return 'N/A';
+      }
+    }
   }
 
   Widget pin() {

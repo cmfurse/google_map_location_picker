@@ -13,10 +13,19 @@ class LocationResult {
   /// Latitude/Longitude of the selected location.
   LatLng? latLng;
 
-  LocationResult({this.latLng, this.address, this.placeId});
+  String? placeName = '';
+  String? countryName = '';
+  String? cityName = '';
+  String? stateName = '';
+
+  // LocationResult({this.latLng, this.address, this.placeId});
+  LocationResult({this.latLng, this.address, this.placeId, this.placeName, this.countryName, this.cityName, this.stateName});
+
 
   @override
   String toString() {
-    return 'LocationResult{address: $address, latLng: $latLng, placeId: $placeId}';
+    return 'LocationResult{address: $address, latLng: $latLng, placeId: $placeId, placeName: $placeName, countryName: $countryName, cityName: $cityName, stateName: $stateName}';
+
+    // return 'LocationResult{address: $address, latLng: $latLng, placeId: $placeId}';
   }
 }
