@@ -255,7 +255,7 @@ class MapPickerState extends State<MapPicker> {
                         _state = data["state"];
                         return Text(
                           _city !=null && _state!=null?"$_city, $_state" :_city !=null?"$_city":_state !=null?"$_state":
-                              "Unnamed place",
+                              "$_address",
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         );
                       },
