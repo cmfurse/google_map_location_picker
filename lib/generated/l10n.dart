@@ -15,7 +15,7 @@ import 'intl/messages_all.dart';
 class S {
   S();
   
-  static late S current;
+  static S? current;
   
   static const AppLocalizationDelegate delegate =
     AppLocalizationDelegate();
@@ -27,7 +27,7 @@ class S {
       Intl.defaultLocale = localeName;
       S.current = S();
       
-      return S.current;
+      return S.current!;
     });
   } 
 
