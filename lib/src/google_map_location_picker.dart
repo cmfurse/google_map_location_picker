@@ -104,8 +104,6 @@ class LocationPickerState extends State<LocationPicker> {
   /// is hidden so as to give more room and better experience for the
   /// autocomplete list overlay.
   void searchPlace(String place) {
-    if (context == null) return;
-
     clearOverlay();
 
     setState(() => hasSearchTerm = place.length > 0);
@@ -146,7 +144,7 @@ class LocationPickerState extends State<LocationPicker> {
       ),
     );
 
-    Overlay.of(context)!.insert(overlayEntry!);
+    Overlay.of(context).insert(overlayEntry!);
 
     autoCompleteSearch(place);
   }
@@ -162,20 +160,16 @@ class LocationPickerState extends State<LocationPicker> {
         ? "&components=country:${countries!.sublist(0, min(countries.length, 5)).join('|country:')}"
         : "";
 
-    var endpoint =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?" +
-            "key=${widget.apiKey}&" +
-            "input={$place}$regionParam&sessiontoken=$sessionToken&" +
-            "language=${widget.language}";
+    var endpoint = "https://maps.googleapis.com/maps/api/place/autocomplete/json?" +
+        "key=${widget.apiKey}&" +
+        "input={$place}$regionParam&sessiontoken=$sessionToken&" +
+        "language=${widget.language}";
 
     if (locationResult != null) {
-      endpoint += "&location=${locationResult!.latLng!.latitude}," +
-          "${locationResult!.latLng!.longitude}";
+      endpoint += "&location=${locationResult!.latLng!.latitude}," + "${locationResult!.latLng!.longitude}";
     }
 
-    LocationUtils.getAppHeaders()
-        .then((headers) => http.get(Uri.parse(endpoint), headers: headers as Map<String, String>?))
-        .then((response) {
+    LocationUtils.getAppHeaders().then((headers) => http.get(Uri.parse(endpoint), headers: headers)).then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
         List<dynamic> predictions = data['predictions'];
@@ -217,17 +211,13 @@ class LocationPickerState extends State<LocationPicker> {
   void decodeAndSelectPlace(String? placeId) {
     clearOverlay();
 
-    final endpoint =
-        "https://maps.googleapis.com/maps/api/place/details/json?key=${widget.apiKey}" +
-            "&placeid=$placeId" +
-            '&language=${widget.language}';
+    final endpoint = "https://maps.googleapis.com/maps/api/place/details/json?key=${widget.apiKey}" +
+        "&placeid=$placeId" +
+        '&language=${widget.language}';
 
-    LocationUtils.getAppHeaders()
-        .then((headers) => http.get(Uri.parse(endpoint), headers: headers as Map<String, String>?))
-        .then((response) {
+    LocationUtils.getAppHeaders().then((headers) => http.get(Uri.parse(endpoint), headers: headers)).then((response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> location =
-            jsonDecode(response.body)['result']['geometry']['location'];
+        Map<String, dynamic> location = jsonDecode(response.body)['result']['geometry']['location'];
 
         LatLng latLng = LatLng(location['lat'], location['lng']);
 
@@ -260,7 +250,7 @@ class LocationPickerState extends State<LocationPicker> {
       ),
     );
 
-    Overlay.of(context)!.insert(overlayEntry!);
+    Overlay.of(context).insert(overlayEntry!);
   }
 
   /// Utility function to get clean readable name of a location. First checks
@@ -286,18 +276,16 @@ class LocationPickerState extends State<LocationPicker> {
   /// Fetches and updates the nearby places to the provided lat,lng
   void getNearbyPlaces(LatLng latLng) {
     LocationUtils.getAppHeaders().then((headers) {
-      var endpoint =
-          "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
-              "key=${widget.apiKey}&" +
-              "location=${latLng.latitude},${latLng.longitude}&radius=150" +
-              "&language=${widget.language}";
+      var endpoint = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
+          "key=${widget.apiKey}&" +
+          "location=${latLng.latitude},${latLng.longitude}&radius=150" +
+          "&language=${widget.language}";
 
-      return http.get(Uri.parse(endpoint), headers: headers as Map<String, String>?);
+      return http.get(Uri.parse(endpoint), headers: headers);
     }).then((response) {
       if (response.statusCode == 200) {
         nearbyPlaces.clear();
-        for (Map<String, dynamic> item
-            in jsonDecode(response.body)['results']) {
+        for (Map<String, dynamic> item in jsonDecode(response.body)['results']) {
           NearbyPlace nearbyPlace = NearbyPlace();
 
           nearbyPlace.name = item['name'];
@@ -324,13 +312,11 @@ class LocationPickerState extends State<LocationPicker> {
   /// This method gets the human readable name of the location. Mostly appears
   /// to be the road name and the locality.
   Future reverseGeocodeLatLng(LatLng latLng) async {
-    final endpoint =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}" +
-            "&key=${widget.apiKey}" +
-            "&language=${widget.language}";
+    final endpoint = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}" +
+        "&key=${widget.apiKey}" +
+        "&language=${widget.language}";
 
-    final response = await http.get(Uri.parse(endpoint),
-        headers: await (LocationUtils.getAppHeaders() as FutureOr<Map<String, String>?>));
+    final response = await http.get(Uri.parse(endpoint), headers: await (LocationUtils.getAppHeaders()));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseJson = jsonDecode(response.body);
@@ -343,8 +329,7 @@ class LocationPickerState extends State<LocationPicker> {
         road = 'REQUEST DENIED = please see log for more details';
         print(responseJson['error_message']);
       } else {
-        road =
-            responseJson['results'][0]['address_components'][0]['short_name'];
+        road = responseJson['results'][0]['address_components'][0]['short_name'];
       }
 
 //      String locality =
@@ -412,8 +397,7 @@ class LocationPickerState extends State<LocationPicker> {
             requiredGPS: widget.requiredGPS,
             myLocationButtonEnabled: widget.myLocationButtonEnabled,
             layersButtonEnabled: widget.layersButtonEnabled,
-            automaticallyAnimateToCurrentLocation:
-                widget.automaticallyAnimateToCurrentLocation,
+            automaticallyAnimateToCurrentLocation: widget.automaticallyAnimateToCurrentLocation,
             mapStylePath: widget.mapStylePath,
             appBarColor: widget.appBarColor,
             searchBarBoxDecoration: widget.searchBarBoxDecoration,
@@ -474,8 +458,7 @@ Future<LocationResult?> showLocationPicker(
           requiredGPS: requiredGPS,
           myLocationButtonEnabled: myLocationButtonEnabled,
           layersButtonEnabled: layersButtonEnabled,
-          automaticallyAnimateToCurrentLocation:
-              automaticallyAnimateToCurrentLocation,
+          automaticallyAnimateToCurrentLocation: automaticallyAnimateToCurrentLocation,
           mapStylePath: mapStylePath,
           appBarColor: appBarColor,
           hintText: hintText,

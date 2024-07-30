@@ -45,8 +45,7 @@ class FutureLoadingBuilder<T> extends StatefulWidget {
   final Widget? loadingIndicator;
 
   @override
-  _FutureLoadingBuilderState<T> createState() =>
-      _FutureLoadingBuilderState<T>();
+  _FutureLoadingBuilderState<T> createState() => _FutureLoadingBuilderState<T>();
 }
 
 class _FutureLoadingBuilderState<T> extends State<FutureLoadingBuilder<T?>> {
@@ -68,8 +67,7 @@ class _FutureLoadingBuilderState<T> extends State<FutureLoadingBuilder<T?>> {
           case ConnectionState.none:
           case ConnectionState.active:
           case ConnectionState.waiting:
-            return widget.loadingIndicator ??
-                Center(child: CircularProgressIndicator());
+            return widget.loadingIndicator ?? Center(child: CircularProgressIndicator());
 
           case ConnectionState.done:
             if (snapshot.hasError) {
@@ -78,27 +76,23 @@ class _FutureLoadingBuilderState<T> extends State<FutureLoadingBuilder<T?>> {
                 d('SocketException-> ${error.message}');
                 return Center(
                   child: Text(
-                    S.of(context)?.please_check_your_connection ??
-                        'Please check your connection',
+                    S.of(context)?.please_check_your_connection ?? 'Please check your connection',
                     overflow: TextOverflow.fade,
                   ),
                 );
-              } else if (error is PlatformException &&
-                  error.code == 'ERROR_GEOCODING_COORDINATES') {
+              } else if (error is PlatformException && error.code == 'ERROR_GEOCODING_COORDINATES') {
                 return Text(
-                  S.of(context)?.please_check_your_connection ??
-                      'Please check your connection',
+                  S.of(context)?.please_check_your_connection ?? 'Please check your connection',
                   overflow: TextOverflow.fade,
                 );
               } else {
-                d('Unknow error: $error');
+                d('Unknown error: $error');
                 return Center(child: Text('Unknown error'));
               }
             }
 
             return widget.builder!(context, snapshot.data);
         }
-        return widget.builder!(context, snapshot.data);
       },
     );
   }
