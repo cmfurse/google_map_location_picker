@@ -165,13 +165,9 @@ class MapPickerState extends State<MapPicker> {
               target: widget.initialCenter!,
               zoom: widget.initialZoom!,
             ),
+            style: _mapStyle,
             onMapCreated: (GoogleMapController controller) {
               mapController.complete(controller);
-              //Implementation of mapStyle
-              if (widget.mapStylePath != null) {
-                controller.setMapStyle(_mapStyle);
-              }
-
               _lastMapPosition = widget.initialCenter;
               LocationProvider.of(context, listen: false).setLastIdleLocation(_lastMapPosition);
             },
@@ -409,11 +405,11 @@ class MapPickerState extends State<MapPicker> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return WillPopScope(
-          onWillPop: () async {
+        return PopScope(
+          // return WillPopScope(
+          onPopInvoked: (didPop) async {
             Navigator.of(context, rootNavigator: true).pop();
             Navigator.of(context, rootNavigator: true).pop();
-            return true;
           },
           child: AlertDialog(
             title: Text(S.of(context)?.access_to_location_denied ?? 'Access to location denied'),
@@ -440,11 +436,10 @@ class MapPickerState extends State<MapPicker> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return WillPopScope(
-          onWillPop: () async {
+        return PopScope(
+          onPopInvoked: (didPop) async {
             Navigator.of(context, rootNavigator: true).pop();
             Navigator.of(context, rootNavigator: true).pop();
-            return true;
           },
           child: AlertDialog(
             title:
