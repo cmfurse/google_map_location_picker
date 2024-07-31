@@ -11,3 +11,8 @@ lib/keys.dart
 /google_map_location_picker.iml
 /.idea
 /android/.idea/
+
+# FVM Version Cache
+.fvm/
+.fvm
+example/ios/Flutter/flutter_export_environment.sh

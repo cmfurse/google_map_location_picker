@@ -91,8 +91,7 @@ class MapPickerState extends State<MapPicker> {
   String? _state;
 
   void _onToggleMapTypePressed() {
-    final MapType nextType =
-        MapType.values[(_currentMapType.index + 1) % MapType.values.length];
+    final MapType nextType = MapType.values[(_currentMapType.index + 1) % MapType.values.length];
 
     setState(() => _currentMapType = nextType);
   }
@@ -101,8 +100,7 @@ class MapPickerState extends State<MapPicker> {
   Future<void> _initCurrentLocation() async {
     Position? currentPosition;
     try {
-      currentPosition =
-          await Geolocator.getCurrentPosition(desiredAccuracy: widget.desiredAccuracy!);
+      currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: widget.desiredAccuracy!);
       d("position = $currentPosition");
 
       setState(() => _currentPosition = currentPosition);
@@ -115,9 +113,7 @@ class MapPickerState extends State<MapPicker> {
 
     setState(() => _currentPosition = currentPosition);
 
-    if (currentPosition != null)
-      moveToCurrentLocation(
-          LatLng(currentPosition.latitude, currentPosition.longitude));
+    if (currentPosition != null) moveToCurrentLocation(LatLng(currentPosition.latitude, currentPosition.longitude));
   }
 
   Future moveToCurrentLocation(LatLng currentLocation) async {
@@ -131,8 +127,7 @@ class MapPickerState extends State<MapPicker> {
   @override
   void initState() {
     super.initState();
-    if (widget.automaticallyAnimateToCurrentLocation! && !widget.requiredGPS!)
-      _initCurrentLocation();
+    if (widget.automaticallyAnimateToCurrentLocation! && !widget.requiredGPS!) _initCurrentLocation();
 
     if (widget.mapStylePath != null) {
       rootBundle.loadString(widget.mapStylePath!).then((string) {
@@ -148,15 +143,12 @@ class MapPickerState extends State<MapPicker> {
       if (_currentPosition == null) _initCurrentLocation();
     }
 
-    if (_currentPosition != null && dialogOpen != null)
-      Navigator.of(context, rootNavigator: true).pop();
+    if (_currentPosition != null && dialogOpen != null) Navigator.of(context, rootNavigator: true).pop();
 
     return Scaffold(
       body: Builder(
         builder: (context) {
-          if (_currentPosition == null &&
-              widget.automaticallyAnimateToCurrentLocation! &&
-              widget.requiredGPS!) {
+          if (_currentPosition == null && widget.automaticallyAnimateToCurrentLocation! && widget.requiredGPS!) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -184,16 +176,14 @@ class MapPickerState extends State<MapPicker> {
               }
 
               _lastMapPosition = widget.initialCenter;
-              LocationProvider.of(context, listen: false)
-                  .setLastIdleLocation(_lastMapPosition);
+              LocationProvider.of(context, listen: false).setLastIdleLocation(_lastMapPosition);
             },
             onCameraMove: (CameraPosition position) {
               _lastMapPosition = position.target;
             },
             onCameraIdle: () async {
               print("onCameraIdle#_lastMapPosition = $_lastMapPosition");
-              LocationProvider.of(context, listen: false)
-                  .setLastIdleLocation(_lastMapPosition);
+              LocationProvider.of(context, listen: false).setLastIdleLocation(_lastMapPosition);
             },
             onCameraMoveStarted: () {
               print("onCameraMoveStarted#_lastMapPosition = $_lastMapPosition");
@@ -223,13 +213,13 @@ class MapPickerState extends State<MapPicker> {
       child: Padding(
         padding: widget.resultCardPadding ?? EdgeInsets.all(16.0),
         child: Container(
-      decoration: widget.resultCardDecoration ?? BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-      color: Colors.black,
-    ),
-    // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Consumer<LocationProvider>(
-              builder: (context, locationProvider, _) {
+          decoration: widget.resultCardDecoration ??
+              BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.black,
+              ),
+          // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: Consumer<LocationProvider>(builder: (context, locationProvider, _) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -254,9 +244,7 @@ class MapPickerState extends State<MapPicker> {
                         _city = data["city"];
                         _state = data["state"];
                         return Text(
-                          _address ??
-                              S.of(context)?.unnamedPlace ??
-                              'Unnamed place',
+                          _address ?? S.of(context)?.unnamedPlace ?? 'Unnamed place',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         );
                       },
@@ -277,8 +265,7 @@ class MapPickerState extends State<MapPicker> {
                         )
                       });
                     },
-                    child: widget.resultCardConfirmIcon ??
-                        Icon(Icons.arrow_forward),
+                    child: widget.resultCardConfirmIcon ?? Icon(Icons.arrow_forward),
                   ),
                 ],
               ),
@@ -295,19 +282,18 @@ class MapPickerState extends State<MapPicker> {
           'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}'
           '&key=${widget.apiKey}&language=${widget.language}';
 
-      final response = jsonDecode((await http.get(Uri.parse(endpoint),
-              headers: await (LocationUtils.getAppHeaders())))
-          .body);
+      final response =
+          jsonDecode((await http.get(Uri.parse(endpoint), headers: await (LocationUtils.getAppHeaders()))).body);
 
       print("BLB data ${response}");
 
       return {
         "placeId": response['results'][0]['place_id'],
         "address": response['results'][0]['formatted_address'],
-        "long_name" : response['results'][0]['address_components'][1]['long_name'],
-        "country"   : getCountryName(response['results'][0]),
-        "city"      : getCityName(response['results'][0]),
-        "state"      : getStateName(response['results'][0])
+        "long_name": response['results'][0]['address_components'][1]['long_name'],
+        "country": getCountryName(response['results'][0]),
+        "city": getCityName(response['results'][0]),
+        "state": getStateName(response['results'][0])
       };
     } catch (e) {
       print("BLB $e");
@@ -316,12 +302,12 @@ class MapPickerState extends State<MapPicker> {
     return {"placeId": null, "address": null};
   }
 
-  String? getStateName(dynamic addressArray){
+  String? getStateName(dynamic addressArray) {
     String countryName = '';
 
     print(addressArray);
     for (var i = 0; i < addressArray['address_components'].length; i++) {
-      if(addressArray['address_components'][i]['types'].length > 0){
+      if (addressArray['address_components'][i]['types'].length > 0) {
         for (var x = 0; x < addressArray['address_components'][i]['types'].length; x++) {
           if ('administrative_area_level_1' == addressArray['address_components'][i]['types'][x]) {
             countryName = addressArray['address_components'][i]['long_name'];
@@ -333,12 +319,13 @@ class MapPickerState extends State<MapPicker> {
       }
     }
   }
-  String? getCountryName(dynamic addressArray){
+
+  String? getCountryName(dynamic addressArray) {
     String countryName = '';
 
     print(addressArray);
     for (var i = 0; i < addressArray['address_components'].length; i++) {
-      if(addressArray['address_components'][i]['types'].length > 0){
+      if (addressArray['address_components'][i]['types'].length > 0) {
         for (var x = 0; x < addressArray['address_components'][i]['types'].length; x++) {
           if ('country' == addressArray['address_components'][i]['types'][x]) {
             countryName = addressArray['address_components'][i]['long_name'];
@@ -346,22 +333,22 @@ class MapPickerState extends State<MapPicker> {
           }
         }
       } else {
-        return 'N/A' ;
+        return 'N/A';
       }
     }
   }
 
-  String? getCityName(dynamic addressArray){
+  String? getCityName(dynamic addressArray) {
     String cityName = '';
     for (var i = 0; i < addressArray['address_components'].length; i++) {
-      if(addressArray['address_components'][i]['types'].length > 0){
+      if (addressArray['address_components'][i]['types'].length > 0) {
         for (var x = 0; x < addressArray['address_components'][i]['types'].length; x++) {
           if ('locality' == addressArray['address_components'][i]['types'][x]) {
             cityName = addressArray['address_components'][i]['long_name'];
             return cityName;
           }
         }
-      }else{
+      } else {
         return 'N/A';
       }
     }
@@ -405,11 +392,9 @@ class MapPickerState extends State<MapPicker> {
 
     if (geolocationStatus == LocationPermission.denied && dialogOpen == null) {
       dialogOpen = _showDeniedDialog();
-    } else if (geolocationStatus == LocationPermission.deniedForever &&
-        dialogOpen == null) {
+    } else if (geolocationStatus == LocationPermission.deniedForever && dialogOpen == null) {
       dialogOpen = _showDeniedForeverDialog();
-    } else if (geolocationStatus == LocationPermission.whileInUse ||
-        geolocationStatus == LocationPermission.always) {
+    } else if (geolocationStatus == LocationPermission.whileInUse || geolocationStatus == LocationPermission.always) {
       d('GeolocationStatus.granted');
 
       if (dialogOpen != null) {
@@ -431,13 +416,11 @@ class MapPickerState extends State<MapPicker> {
             return true;
           },
           child: AlertDialog(
-            title: Text(S.of(context)?.access_to_location_denied ??
-                'Access to location denied'),
-            content: Text(
-                S.of(context)?.allow_access_to_the_location_services ??
-                    'Allow access to the location services.'),
+            title: Text(S.of(context)?.access_to_location_denied ?? 'Access to location denied'),
+            content:
+                Text(S.of(context)?.allow_access_to_the_location_services ?? 'Allow access to the location services.'),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(S.of(context)?.ok ?? 'Ok'),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
@@ -464,14 +447,12 @@ class MapPickerState extends State<MapPicker> {
             return true;
           },
           child: AlertDialog(
-            title: Text(S.of(context)?.access_to_location_permanently_denied ??
-                'Access to location permanently denied'),
-            content: Text(S
-                    .of(context)
-                    ?.allow_access_to_the_location_services_from_settings ??
+            title:
+                Text(S.of(context)?.access_to_location_permanently_denied ?? 'Access to location permanently denied'),
+            content: Text(S.of(context)?.allow_access_to_the_location_services_from_settings ??
                 'Allow access to the location services for this App using the device settings.'),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(S.of(context)?.ok ?? 'Ok'),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
@@ -495,18 +476,14 @@ class MapPickerState extends State<MapPicker> {
           barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(S.of(context)?.cant_get_current_location ??
-                  "Can't get current location"),
-              content: Text(S
-                      .of(context)
-                      ?.please_make_sure_you_enable_gps_and_try_again ??
+              title: Text(S.of(context)?.cant_get_current_location ?? "Can't get current location"),
+              content: Text(S.of(context)?.please_make_sure_you_enable_gps_and_try_again ??
                   'Please make sure you enable GPS and try again'),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text('Ok'),
                   onPressed: () {
-                    final AndroidIntent intent = AndroidIntent(
-                        action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+                    final AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
 
                     intent.launch();
                     Navigator.of(context, rootNavigator: true).pop();
