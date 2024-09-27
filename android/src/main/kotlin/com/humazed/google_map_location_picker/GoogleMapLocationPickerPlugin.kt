@@ -20,7 +20,7 @@ class GoogleMapLocationPickerPlugin(act: Activity) : MethodCallHandler {
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val channel = MethodChannel(registrar.messenger(), "google_map_location_picker")
-            channel.setMethodCallHandler(GoogleMapLocationPickerPlugin(registrar.activity()))
+            channel.setMethodCallHandler(GoogleMapLocationPickerPlugin(registrar.activity()!!))
         }
     }
 
